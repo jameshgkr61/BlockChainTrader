@@ -12,37 +12,22 @@ import datetime
 class CoinPair:
     def __init__(self, conn=None):
         self.name=''
-        self.currPrice=-1
-        self.currVolume=-1
-        self.high24hr=-1
-        self.low24hr=-1
+        self.value={}
         self.conn=conn
 
     def add_coin(self, name,conn):
         self.name=name
         if conn:
             self.conn=conn
-            value=conn.api_query("returnTicker")[name]
-            self.currPrice=float(value['last'])
-            self.currValue=float(value['baseVolume'])
-            self.high24hr=float(value['high24hr'])
-            self.low24hr=float(value['low24hr'])
+            self.value=conn.api_query("returnTicker")[name]
         else:
             print 'Warning: missing the latest data'
 
     def reset(self):
         self.__init__()
 
-    def get_current_status(self):
-        status={
-                'name':self.name, 
-                'price':self.currPrice,
-                'volue':self.currVolume,
-                'high24hr':self.high24hr,
-                'low24hr':self.low24hr
-                }
-        return status
-
+    def get_current_value(self):
+        return self.value
 
     def get_historical_data(self, startTime, endTime, period, save=False):
         # conn: connection to Poloniex API
