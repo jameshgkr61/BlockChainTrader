@@ -4,27 +4,13 @@ import json
 import time
 import hmac,hashlib
 from poloniex import poloniex
+import coin
 
 
 MAX_PATH_SIZE=5
 MIN_PATH_SIZE=3
 START_VALUE=1000
 TRIGGER_THRESHOLD=0.02
-COIN_RANK=['ETH','ETC','XRP','NXT','DGB','DASH','LTC','ZEC','SC','STRAT','FCT','XEM','LSK','STR','GNT','GNO','STEEM']
-COIN_RANK_COPY=['ETH','BTS','ETC','XRP','NXT','DGB','DASH','LTC','ZEC','SC','STRAT','FCT','XEM','LSK','XMR','STR','GNT','DOGE','STEEM','SYS','POT','DCR','ARDR','GRC','BLK','REP','BCN','GNO']
-
-class Coin:
-    def __init__(self, name):
-        self.name = name
-        self.coinType = 'alt'
-        if self.name in ['BTC','ETH','XMR']:
-            self.coinType = 'master'
-        elif self.name == 'USDT':
-            self.coinType = 'usd'
-        self.edges = {}
-
-    def add_edge(self, neighbourName, price):
-        self.edges[neighbourName]=price
 
 class CoinGraph:
     def __init__(self):
@@ -33,7 +19,6 @@ class CoinGraph:
         self.altCoinGraph={}
         self.usdCoinGraph={}
         self.ticker={}
-        self.poloniexBot=None
 
     def add_coin(self, coin):
         self.graph[coin.name]=coin
@@ -50,7 +35,7 @@ class CoinGraph:
                 continue
             for name in names:
                 if not self.get_coin(name):
-                    self.add_coin(Coin(name))
+                    self.add_coin(coin.Coin(name))
             self.graph[names[0]].add_edge(names[1], 1/float(price))
             if names[0]<>'USDT':
                 self.graph[names[1]].add_edge(names[0],float(price))
@@ -128,12 +113,3 @@ class CoinGraph:
             curr=name
         return value/START_VALUE-1
 
-    def setupPoloniexBot(self, poloniexBot):
-        self.poloniexBot=poloniexBot
-
-class PoloniexBot:
-    def __init__(self, apiKey, secret):
-        self.conn = poloniex(apiKey, secret)
-
-    def trade_arbitrage_path(self, path, ticker):
-        return 
